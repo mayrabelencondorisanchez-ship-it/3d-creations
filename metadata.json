@@ -1,0 +1,6 @@
+{
+  "name": "Universo 3D - Taller de Impresión 3D",
+  "description": "Tienda online y taller de impresión 3D de alta precisión. Catálogo de productos, cotizaciones personalizadas y pedidos por WhatsApp.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
