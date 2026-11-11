@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ProductsSection } from './components/ProductsSection';
 import { FeaturesSection } from './components/FeaturesSection';
+import { HowItWorksSection } from './components/HowItWorksSection';
 import { AboutSection } from './components/AboutSection';
 import { NewsSection } from './components/NewsSection';
 import { ContactSection } from './components/ContactSection';
@@ -30,6 +31,9 @@ export default function App() {
 
           {/* Características (Requisito 4) */}
           <FeaturesSection />
+
+          {/* Sección Informativa: ¿Cómo funcionan las impresoras 3D? (Video Xataka) */}
+          <HowItWorksSection />
 
           {/* Nosotros (Requisito 4) */}
           <AboutSection />

@@ -42,6 +42,11 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
+                <a href="#como-funciona" className="hover:text-rose-400 transition-colors">
+                  ¿Cómo Funciona? (Video Guía)
+                </a>
+              </li>
+              <li>
                 <a href="#nosotros" className="hover:text-rose-400 transition-colors">
                   Sobre el Taller
                 </a>
