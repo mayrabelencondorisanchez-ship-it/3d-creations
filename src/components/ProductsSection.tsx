@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { Producto } from '../types';
-import { SUPPLEMENTARY_PRODUCTS } from '../data/supplementaryProducts';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatters';
 import { ProductModal } from './ProductModal';
@@ -20,9 +19,8 @@ export const ProductsSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMaterial, setSelectedMaterial] = useState<string>('todos');
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc' | 'name'>('default');
-  const [includeWorkshopCatalog, setIncludeWorkshopCatalog] = useState(true);
 
-  // Added animation state per product
+  // Animation state per product
   const [justAddedId, setJustAddedId] = useState<string | number | null>(null);
 
   const fetchProducts = async () => {
@@ -54,39 +52,20 @@ export const ProductsSection: React.FC = () => {
     fetchProducts();
   }, []);
 
-  // Merge db products + supplementary workshop products
-  const combinedProducts = useMemo(() => {
-    const list: (Producto & { isFromDb?: boolean })[] = [
-      ...dbProducts.map((p) => ({ ...p, isFromDb: true })),
-    ];
-
-    if (includeWorkshopCatalog) {
-      // Add items not already in DB by name
-      const existingNames = new Set(dbProducts.map((p) => p.nombre.toLowerCase()));
-      const filteredSupp = SUPPLEMENTARY_PRODUCTS.filter(
-        (sp) => !existingNames.has(sp.nombre.toLowerCase())
-      );
-      list.push(...filteredSupp);
-    }
-
-    return list;
-  }, [dbProducts, includeWorkshopCatalog]);
-
-  // Extract materials for filter
+  // Extract materials for filter directly from live DB products
   const availableMaterials = useMemo(() => {
     const materials = new Set<string>();
-    combinedProducts.forEach((p) => {
+    dbProducts.forEach((p) => {
       if (p.material) {
-        // Normalize material name
         materials.add(p.material.trim());
       }
     });
     return Array.from(materials);
-  }, [combinedProducts]);
+  }, [dbProducts]);
 
-  // Filtered & sorted list
+  // Filtered & sorted list (ONLY DB products)
   const filteredProducts = useMemo(() => {
-    return combinedProducts
+    return dbProducts
       .filter((p) => {
         const matchesSearch =
           p.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -105,7 +84,7 @@ export const ProductsSection: React.FC = () => {
         if (sortBy === 'name') return a.nombre.localeCompare(b.nombre);
         return 0;
       });
-  }, [combinedProducts, searchTerm, selectedMaterial, sortBy]);
+  }, [dbProducts, searchTerm, selectedMaterial, sortBy]);
 
   const handleQuickAdd = (p: Producto, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -125,13 +104,13 @@ export const ProductsSection: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-rose-400 font-mono mb-2">
               <Database className="w-3.5 h-3.5" />
-              <span>Catálogo en Vivo · Supabase Sync</span>
+              <span>Catálogo en Vivo · Supabase</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
               Catálogo de Piezas &amp; Modelos 3D
             </h2>
             <p className="text-slate-400 text-sm sm:text-base mt-2 max-w-2xl">
-              Explorá nuestras piezas impresas en PLA, PETG, ABS y Resina 8K. Agregá al carrito y confirmá tu pedido con stock en tiempo real directamente por WhatsApp.
+              Productos sincronizados directamente desde nuestra base de datos. Agregá al carrito y confirmá tu pedido con stock en tiempo real directamente por WhatsApp.
             </p>
           </div>
 
@@ -154,7 +133,7 @@ export const ProductsSection: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
             
             {/* Search Input */}
-            <div className="relative md:col-span-6">
+            <div className="relative md:col-span-8">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -166,7 +145,7 @@ export const ProductsSection: React.FC = () => {
             </div>
 
             {/* Sort Selector */}
-            <div className="md:col-span-3">
+            <div className="md:col-span-4">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
@@ -178,53 +157,42 @@ export const ProductsSection: React.FC = () => {
                 <option value="name">Alfabético: A - Z</option>
               </select>
             </div>
-
-            {/* Catalog Source Toggle */}
-            <div className="md:col-span-3 flex items-center justify-end">
-              <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={includeWorkshopCatalog}
-                  onChange={(e) => setIncludeWorkshopCatalog(e.target.checked)}
-                  className="rounded border-slate-750 text-rose-500 focus:ring-rose-400/20 bg-slate-950"
-                />
-                <span>Mostrar catálogo extendido del taller</span>
-              </label>
-            </div>
           </div>
 
           {/* Material Filters (Interactive Tabs) */}
-          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/60">
-            <span className="text-xs text-slate-400 mr-1 font-medium">Filtrar material:</span>
-            <button
-              onClick={() => setSelectedMaterial('todos')}
-              className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
-                selectedMaterial === 'todos'
-                  ? 'bg-rose-500 text-white shadow-sm'
-                  : 'bg-slate-950 text-slate-300 hover:text-white border border-slate-800'
-              }`}
-            >
-              Todos ({combinedProducts.length})
-            </button>
-            {availableMaterials.map((mat) => {
-              const count = combinedProducts.filter(
-                (p) => p.material && p.material.toLowerCase() === mat.toLowerCase()
-              ).length;
-              return (
-                <button
-                  key={mat}
-                  onClick={() => setSelectedMaterial(mat)}
-                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
-                    selectedMaterial.toLowerCase() === mat.toLowerCase()
-                      ? 'bg-rose-500 text-white shadow-sm'
-                      : 'bg-slate-950 text-slate-300 hover:text-white border border-slate-800'
-                  }`}
-                >
-                  {mat} ({count})
-                </button>
-              );
-            })}
-          </div>
+          {availableMaterials.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/60">
+              <span className="text-xs text-slate-400 mr-1 font-medium">Filtrar material:</span>
+              <button
+                onClick={() => setSelectedMaterial('todos')}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                  selectedMaterial === 'todos'
+                    ? 'bg-rose-500 text-white shadow-sm'
+                    : 'bg-slate-950 text-slate-300 hover:text-white border border-slate-800'
+                }`}
+              >
+                Todos ({dbProducts.length})
+              </button>
+              {availableMaterials.map((mat) => {
+                const count = dbProducts.filter(
+                  (p) => p.material && p.material.toLowerCase() === mat.toLowerCase()
+                ).length;
+                return (
+                  <button
+                    key={mat}
+                    onClick={() => setSelectedMaterial(mat)}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                      selectedMaterial.toLowerCase() === mat.toLowerCase()
+                        ? 'bg-rose-500 text-white shadow-sm'
+                        : 'bg-slate-950 text-slate-300 hover:text-white border border-slate-800'
+                    }`}
+                  >
+                    {mat} ({count})
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Database Error Banner if any */}
@@ -232,11 +200,11 @@ export const ProductsSection: React.FC = () => {
           <div className="p-4 mb-6 rounded-xl bg-rose-950/30 border border-rose-800/50 text-rose-200 text-sm flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-rose-400" />
-              <span>Aviso: {error}. Mostrando catálogo del taller disponible.</span>
+              <span>Aviso: {error}.</span>
             </div>
             <button
               onClick={fetchProducts}
-              className="underline text-xs hover:text-white"
+              className="underline text-xs hover:text-white cursor-pointer"
             >
               Reintentar
             </button>
@@ -246,7 +214,7 @@ export const ProductsSection: React.FC = () => {
         {/* Loading State Skeletons */}
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 animate-pulse space-y-4">
                 <div className="w-full aspect-[4/3] bg-slate-800/60 rounded-xl" />
                 <div className="h-4 bg-slate-800/80 rounded w-2/3" />
@@ -260,27 +228,35 @@ export const ProductsSection: React.FC = () => {
           </div>
         )}
 
-        {/* Empty Search Results */}
+        {/* Empty DB or Search Results */}
         {!loading && filteredProducts.length === 0 && (
           <div className="text-center py-16 bg-slate-900/50 rounded-2xl border border-slate-800/80 p-8">
             <Box className="w-12 h-12 text-slate-600 mx-auto mb-3 stroke-[1.5]" />
-            <h3 className="text-lg font-bold text-white">No se encontraron productos</h3>
+            <h3 className="text-lg font-bold text-white">
+              {searchTerm || selectedMaterial !== 'todos'
+                ? 'No se encontraron productos'
+                : 'No hay productos en la base de datos'}
+            </h3>
             <p className="text-sm text-slate-400 mt-1 max-w-md mx-auto">
-              No hay piezas que coincidan con &ldquo;{searchTerm}&rdquo; o el filtro de material seleccionado.
+              {searchTerm || selectedMaterial !== 'todos'
+                ? `No hay piezas que coincidan con "${searchTerm}" o el filtro seleccionado.`
+                : 'No se encontraron registros activos en la tabla productos de Supabase.'}
             </p>
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedMaterial('todos');
-              }}
-              className="mt-4 px-4 py-2 text-xs font-semibold text-white bg-rose-500 hover:bg-rose-400 rounded-lg transition-colors"
-            >
-              Restablecer filtros
-            </button>
+            {(searchTerm || selectedMaterial !== 'todos') && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedMaterial('todos');
+                }}
+                className="mt-4 px-4 py-2 text-xs font-semibold text-white bg-rose-500 hover:bg-rose-400 rounded-lg transition-colors cursor-pointer"
+              >
+                Restablecer filtros
+              </button>
+            )}
           </div>
         )}
 
-        {/* Product Cards Grid */}
+        {/* Product Cards Grid - Only Products from Supabase */}
         {!loading && filteredProducts.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {filteredProducts.map((p) => {
@@ -303,19 +279,17 @@ export const ProductsSection: React.FC = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
 
-                      {/* Stock & Material badges */}
+                      {/* Badges */}
                       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
                         {p.material && (
                           <span className="px-2.5 py-1 text-[11px] font-mono font-bold tracking-wide rounded bg-slate-950/90 text-rose-300 border border-slate-800 backdrop-blur-sm">
                             {p.material}
                           </span>
                         )}
-                        {(p as any).isFromDb && (
-                          <span className="px-2 py-0.5 text-[10px] font-mono font-medium rounded bg-emerald-950/90 text-emerald-400 border border-emerald-800/80 backdrop-blur-sm flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                            <span>BD Live</span>
-                          </span>
-                        )}
+                        <span className="px-2 py-0.5 text-[10px] font-mono font-medium rounded bg-emerald-950/90 text-emerald-400 border border-emerald-800/80 backdrop-blur-sm flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                          <span>Supabase</span>
+                        </span>
                       </div>
 
                       {/* Stock Indicator Top Right */}
@@ -367,7 +341,7 @@ export const ProductsSection: React.FC = () => {
                       type="button"
                       disabled={!hasStock}
                       onClick={(e) => handleQuickAdd(p, e)}
-                      className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-lg transition-all shadow-sm ${
+                      className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-lg transition-all shadow-sm cursor-pointer ${
                         isAdded
                           ? 'bg-emerald-500 text-white'
                           : !hasStock
