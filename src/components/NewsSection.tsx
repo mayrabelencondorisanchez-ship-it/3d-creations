@@ -1,6 +1,8 @@
 import React from 'react';
 import { Newspaper, ArrowRight, Sparkles, Flame, Clock } from 'lucide-react';
 import { WHATSAPP_PHONE } from '../utils/formatters';
+import { SHOWCASE_IMAGE_SOURCES } from '../utils/imageFallbacks';
+import { SafeImage } from './SafeImage';
 
 export const NewsSection: React.FC = () => {
   const newsItems = [
@@ -74,12 +76,12 @@ export const NewsSection: React.FC = () => {
           
           {/* Spotlight Hero Card */}
           <div className="lg:col-span-5 bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden group">
-            <div className="relative aspect-[4/3] overflow-hidden">
-              <img
-                src="/src/assets/images/showcase_3d_materials_1794327743135.jpg"
+            <div className="relative aspect-[4/3] overflow-hidden bg-slate-900">
+              <SafeImage
+                src={SHOWCASE_IMAGE_SOURCES[0]}
+                fallbackSources={SHOWCASE_IMAGE_SOURCES.slice(1)}
                 alt="Muestrario de materiales técnicos en 3D Creations"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
               

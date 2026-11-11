@@ -1,5 +1,7 @@
 import React from 'react';
 import { ArrowDown, Cpu, ShieldCheck, Sparkles, Layers } from 'lucide-react';
+import { HERO_IMAGE_SOURCES } from '../utils/imageFallbacks';
+import { SafeImage } from './SafeImage';
 
 export const Hero: React.FC = () => {
   return (
@@ -63,12 +65,12 @@ export const Hero: React.FC = () => {
 
           {/* Right Column: Workshop Image Feature */}
           <div className="lg:col-span-5 relative">
-            <div className="relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-900 group">
-              <img
-                src="/src/assets/images/hero_3d_workshop_1794327743299.jpg"
-                alt="Taller de impresión 3D Creations en Jujuy"
+            <div className="relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-900 group min-h-[360px] sm:min-h-[440px]">
+              <SafeImage
+                src={HERO_IMAGE_SOURCES[0]}
+                fallbackSources={HERO_IMAGE_SOURCES.slice(1)}
+                alt="Taller de impresión 3D Creations en Jujuy - Impresoras FDM y Resina 8K"
                 className="w-full h-[360px] sm:h-[440px] object-cover transition-transform duration-700 group-hover:scale-105"
-                referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
               

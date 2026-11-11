@@ -3,6 +3,8 @@ import { X, Check, ShoppingBag, MessageSquare, Box, Layers, Palette, Shield } fr
 import { Producto } from '../types';
 import { formatPrice, WHATSAPP_PHONE } from '../utils/formatters';
 import { useCart } from '../context/CartContext';
+import { SafeImage } from './SafeImage';
+import { getProductFallbackSources } from '../utils/imageFallbacks';
 
 interface ProductModalProps {
   producto: Producto | null;
@@ -66,23 +68,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({ producto, onClose })
             
             {/* Image Box */}
             <div className="relative aspect-square rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center group">
-              {producto.imagen_url ? (
-                <img
-                  src={producto.imagen_url}
-                  alt={producto.nombre}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    // Fallback to placeholder if url fails
-                    (e.target as HTMLElement).style.display = 'none';
-                  }}
-                  referrerPolicy="no-referrer"
-                />
-              ) : null}
-              {/* Fallback pattern if no image or image fails */}
-              <div className="absolute inset-0 -z-10 flex flex-col items-center justify-center p-6 text-center text-slate-600 bg-gradient-to-br from-slate-900 to-slate-950">
-                <Box className="w-12 h-12 text-slate-700 mb-2 stroke-[1.5]" />
-                <span className="text-xs font-mono text-slate-400">{producto.material || 'Pieza 3D'}</span>
-              </div>
+              <SafeImage
+                src={producto.imagen_url || ''}
+                fallbackSources={getProductFallbackSources(producto.imagen_url, producto.nombre, producto.material)}
+                alt={producto.nombre}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
             </div>
 
             {/* Info Column */}

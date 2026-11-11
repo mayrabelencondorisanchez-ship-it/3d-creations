@@ -4,6 +4,8 @@ import { useCart } from '../context/CartContext';
 import { formatPrice, generateWhatsAppCheckoutUrl, WHATSAPP_PHONE } from '../utils/formatters';
 import { CheckoutCustomerInfo } from '../types';
 import confetti from 'canvas-confetti';
+import { SafeImage } from './SafeImage';
+import { getProductFallbackSources } from '../utils/imageFallbacks';
 
 export const CartDrawer: React.FC = () => {
   const {
@@ -113,18 +115,12 @@ export const CartDrawer: React.FC = () => {
                     >
                       {/* Thumbnail */}
                       <div className="w-14 h-14 rounded-lg bg-slate-900 border border-slate-800 overflow-hidden shrink-0 flex items-center justify-center">
-                        {item.producto.imagen_url ? (
-                          <img
-                            src={item.producto.imagen_url}
-                            alt={item.producto.nombre}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
-                            }}
-                            referrerPolicy="no-referrer"
-                          />
-                        ) : null}
-                        <div className="text-[10px] font-mono text-slate-500">3D</div>
+                        <SafeImage
+                          src={item.producto.imagen_url || ''}
+                          fallbackSources={getProductFallbackSources(item.producto.imagen_url, item.producto.nombre, item.producto.material)}
+                          alt={item.producto.nombre}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
 
                       {/* Info */}

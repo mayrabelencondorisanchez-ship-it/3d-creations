@@ -1,4 +1,5 @@
 import { Producto } from '../types';
+import showcaseImg from '../assets/images/showcase_3d_materials_1794327743135.jpg';
 
 export const SUPPLEMENTARY_PRODUCTS: Producto[] = [
   {
@@ -10,7 +11,7 @@ export const SUPPLEMENTARY_PRODUCTS: Producto[] = [
     stock: 6,
     descripcion: 'Figura flexible impresa en una sola pieza (print-in-place). Escamas pulidas de alta definición y articulación suave en cada vértebra.',
     categoria: 'Figuras y Colección',
-    imagen_url: '/src/assets/images/showcase_3d_materials_1794327743135.jpg',
+    imagen_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'supp-2',
@@ -21,7 +22,7 @@ export const SUPPLEMENTARY_PRODUCTS: Producto[] = [
     stock: 12,
     descripcion: 'Soporte ergonómico para headsets y cascos de audio con canal de cables integrado y base antideslizante con centro de gravedad bajo.',
     categoria: 'Accesorios Desk',
-    imagen_url: '/src/assets/images/showcase_3d_materials_1794327743135.jpg',
+    imagen_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'supp-3',
@@ -32,7 +33,7 @@ export const SUPPLEMENTARY_PRODUCTS: Producto[] = [
     stock: 4,
     descripcion: 'Diseño algorítmico con estructura celular Voronoi. Acabado brillante ideal para decoración minimalista moderna.',
     categoria: 'Hogar y Diseño',
-    imagen_url: '/src/assets/images/showcase_3d_materials_1794327743135.jpg',
+    imagen_url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'supp-4',
@@ -43,7 +44,7 @@ export const SUPPLEMENTARY_PRODUCTS: Producto[] = [
     stock: 9,
     descripcion: 'Impresa a 0.025mm de altura de capa con resina de ultra alta definición. Lista para imprimación y pintura de wargames o miniaturas RPG.',
     categoria: 'Figuras y Colección',
-    imagen_url: '/src/assets/images/showcase_3d_materials_1794327743135.jpg',
+    imagen_url: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'supp-5',
@@ -54,6 +55,6 @@ export const SUPPLEMENTARY_PRODUCTS: Producto[] = [
     stock: 15,
     descripcion: 'Engranajes mecánicos de precisión con dientes helicoidales para reducción de vibraciones y alta tolerancia al desgaste en proyectos DIY.',
     categoria: 'Repuestos e Ingeniería',
-    imagen_url: '/src/assets/images/showcase_3d_materials_1794327743135.jpg',
+    imagen_url: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80',
   },
 ];

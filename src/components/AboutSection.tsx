@@ -1,5 +1,7 @@
 import React from 'react';
 import { Target, Users, Award, MapPin } from 'lucide-react';
+import { ABOUT_IMAGE_SOURCES } from '../utils/imageFallbacks';
+import { SafeImage } from './SafeImage';
 
 export const AboutSection: React.FC = () => {
   return (
@@ -10,12 +12,12 @@ export const AboutSection: React.FC = () => {
           
           {/* Image Column */}
           <div className="lg:col-span-5 relative order-2 lg:order-1">
-            <div className="relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-900 group">
-              <img
-                src="/src/assets/images/about_artisan_3d_1794327743888.jpg"
+            <div className="relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-900 group min-h-[400px] sm:min-h-[480px]">
+              <SafeImage
+                src={ABOUT_IMAGE_SOURCES[0]}
+                fallbackSources={ABOUT_IMAGE_SOURCES.slice(1)}
                 alt="Maker inspeccionando prototipo 3D en taller 3D Creations"
                 className="w-full h-[400px] sm:h-[480px] object-cover transition-transform duration-700 group-hover:scale-105"
-                referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
 

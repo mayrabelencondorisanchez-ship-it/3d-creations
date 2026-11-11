@@ -6,6 +6,8 @@ import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatters';
 import { ProductModal } from './ProductModal';
 import { Search, RotateCw, ShoppingBag, Eye, Database, Sparkles, Box } from 'lucide-react';
+import { SafeImage } from './SafeImage';
+import { getProductFallbackSources } from '../utils/imageFallbacks';
 
 export const ProductsSection: React.FC = () => {
   const { addToCart } = useCart();
@@ -294,23 +296,12 @@ export const ProductsSection: React.FC = () => {
                   <div>
                     {/* Image Area */}
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-950 border border-slate-800/80 mb-4 flex items-center justify-center">
-                      {p.imagen_url ? (
-                        <img
-                          src={p.imagen_url}
-                          alt={p.nombre}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          onError={(e) => {
-                            (e.target as HTMLElement).style.display = 'none';
-                          }}
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : null}
-                      
-                      {/* Fallback pattern */}
-                      <div className="absolute inset-0 -z-10 flex flex-col items-center justify-center text-slate-600 bg-gradient-to-br from-slate-900 to-slate-950 p-4 text-center">
-                        <Box className="w-10 h-10 text-slate-700 mb-1.5 stroke-[1.5]" />
-                        <span className="text-[11px] font-mono text-slate-400">{p.material || 'Pieza 3D'}</span>
-                      </div>
+                      <SafeImage
+                        src={p.imagen_url || ''}
+                        fallbackSources={getProductFallbackSources(p.imagen_url, p.nombre, p.material)}
+                        alt={p.nombre}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
 
                       {/* Stock & Material badges */}
                       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
